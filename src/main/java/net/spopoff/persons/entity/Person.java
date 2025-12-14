@@ -73,4 +73,17 @@ public class Person {
     public void setProjects(List<String> projects) {
         this.projects = projects;
     }
+    public Person createOne(String personId){
+        setPersonId(personId);
+        setFirstname("prénom de "+personId);
+        setLastname("nom de "+personId);
+        Person mng = new Person();
+        mng.setFirstname("prénom du chef de "+personId);
+        mng.setLastname("nom du chef de "+personId);
+        mng.setPersonId("chef2"+personId);
+        mng.setOperationalUnit("boulot");
+        setManagerId(mng);
+        setOperationalUnit("boulot");
+        return this;
+    }
 }

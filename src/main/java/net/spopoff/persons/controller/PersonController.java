@@ -5,14 +5,15 @@
 package net.spopoff.persons.controller;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
-import java.util.Set;
+import java.util.TreeSet;
 import net.spopoff.persons.entity.Change;
 import net.spopoff.persons.entity.Person;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,11 +27,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("persons")
 public class PersonController {
+    
+    @Autowired
+    Map<String, Person> personnes;
+
+    @Autowired
+    TreeSet<Long> changements;
+    
     private final Logger log = LogManager.getLogger(PersonController.class);
     @GetMapping(path="/{personId}", produces = "application/json")
     public ResponseEntity<Person> getPerson(@PathVariable String personId){
         log.info("Demande personid {}", personId);
-        return ResponseEntity.ok(createOne(personId));
+        Person novo = new Person();
+        novo.createOne(personId);
+        personnes.put(personId, novo);
+        return ResponseEntity.ok(novo);
     }
     @GetMapping(path="", produces = "application/json")
     public ResponseEntity<String> getPersonTest(){
@@ -42,20 +53,6 @@ public class PersonController {
         log.info("Demande tout");
         List<Person> persons = donneTout();
         return ResponseEntity.ok(persons);
-    }
-    private Person createOne(String personId){
-        Person ret = new Person();
-        ret.setPersonId(personId);
-        ret.setFirstname("prénom de "+personId);
-        ret.setLastname("nom de "+personId);
-        Person mng = new Person();
-        mng.setFirstname("prénom du chef de "+personId);
-        mng.setLastname("nom du chef de "+personId);
-        mng.setPersonId("chef2"+personId);
-        mng.setOperationalUnit("boulot");
-        ret.setManagerId(mng);
-        ret.setOperationalUnit("boulot");
-        return ret;
     }
     @GetMapping(path="/changelog", produces = "application/json")
     public ResponseEntity<Change[]> getChangement(){
@@ -76,24 +73,21 @@ public class PersonController {
             boolValue = random.nextBoolean();
             Change done = new Change(person);
             done.setDeleted(boolValue);
+            Long up = changements.last();
+            up++;
+            changements.add(up);
             if(boolValue){
-                done.setLastChangeDate(665654654654654L);
+                done.setLastChangeDate(up);
             }else{
                 //on modifie
                 person.setOperationalUnit("travail"+boolValue);
-                done.setLastChangeDate(54471547425474L);
+                done.setLastChangeDate(up);
             }
             ret.add(done);
         }
         return ret.toArray(new Change[0]);
     }
     private List<Person> donneTout(){
-        List<Person> persons = new ArrayList<>();
-        persons.add(createOne("toto"));
-        persons.add(createOne("titi"));
-        persons.add(createOne("tata"));
-        persons.add(createOne("tutu"));
-        persons.add(createOne("tonton"));
-        return persons;
+        return new ArrayList(personnes.values());
     }
 }
