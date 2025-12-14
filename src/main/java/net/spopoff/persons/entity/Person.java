@@ -16,8 +16,13 @@ public class Person {
     private String lastname;
     private String operationalUnit;
     private Person managerId;
+    private final String status = "ACTIVE";
     private List<String> projects;
     public Person(){}
+
+    public String getStatus() {
+        return status;
+    }
     public String getPersonId() {
         return personId;
     }
