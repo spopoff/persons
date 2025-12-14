@@ -5,7 +5,11 @@
 package net.spopoff.persons.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import net.spopoff.persons.entity.Change;
 import net.spopoff.persons.entity.Person;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,12 +40,7 @@ public class PersonController {
     @GetMapping(path="/", produces = "application/json")
     public ResponseEntity<List<Person>> getPersons(){
         log.info("Demande tout");
-        List<Person> persons = new ArrayList<>();
-        persons.add(createOne("toto"));
-        persons.add(createOne("titi"));
-        persons.add(createOne("tata"));
-        persons.add(createOne("tutu"));
-        persons.add(createOne("tonton"));
+        List<Person> persons = donneTout();
         return ResponseEntity.ok(persons);
     }
     private Person createOne(String personId){
@@ -57,5 +56,44 @@ public class PersonController {
         ret.setManagerId(mng);
         ret.setOperationalUnit("boulot");
         return ret;
+    }
+    @GetMapping(path="/changelog", produces = "application/json")
+    public ResponseEntity<Change[]> getChangement(){
+        log.info("Demande changeLog rien");
+        return ResponseEntity.ok(createChangement(true));
+    }
+    @GetMapping(path="/changelog?from={time}", produces = "application/json")
+    public ResponseEntity<Change[]> getChangementFrom(@PathVariable String time){
+        log.info("Demande changeLog "+time);
+        return ResponseEntity.ok(createChangement(false));
+    }
+    private Change[] createChangement(boolean isTime){
+        List<Change> ret = new ArrayList<>();
+        Random random = new Random();
+        List<Person> persons = donneTout();
+        boolean boolValue;
+        for(Person person : persons){
+            boolValue = random.nextBoolean();
+            Change done = new Change(person);
+            done.setDeleted(boolValue);
+            if(boolValue){
+                done.setLastChangeDate(665654654654654L);
+            }else{
+                //on modifie
+                person.setOperationalUnit("travail"+boolValue);
+                done.setLastChangeDate(54471547425474L);
+            }
+            ret.add(done);
+        }
+        return ret.toArray(new Change[0]);
+    }
+    private List<Person> donneTout(){
+        List<Person> persons = new ArrayList<>();
+        persons.add(createOne("toto"));
+        persons.add(createOne("titi"));
+        persons.add(createOne("tata"));
+        persons.add(createOne("tutu"));
+        persons.add(createOne("tonton"));
+        return persons;
     }
 }

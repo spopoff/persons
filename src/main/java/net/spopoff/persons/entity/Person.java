@@ -21,6 +21,9 @@ public class Person {
     public String getPersonId() {
         return personId;
     }
+    public String getUid() {
+        return personId;
+    }
 
     public void setPersonId(String personId) {
         this.personId = personId;
