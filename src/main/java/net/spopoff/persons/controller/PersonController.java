@@ -15,8 +15,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,13 +38,80 @@ public class PersonController {
     TreeSet<Long> changements;
     
     private final Logger log = LogManager.getLogger(PersonController.class);
-    @GetMapping(path="/{personId}", produces = "application/json")
-    public ResponseEntity<Person> getPerson(@PathVariable String personId){
-        log.info("Demande personid {}", personId);
-        Person novo = new Person();
-        novo.createOne(personId);
-        personnes.put(personId, novo);
-        return ResponseEntity.ok(novo);
+    
+    @DeleteMapping(path="/{uId}", produces = "application/json")
+    public ResponseEntity<String> getPersonDelete(@PathVariable String uId){
+        log.info("delete uId {}", uId);
+        boolean done = false;
+        if(personnes.containsKey(uId)){
+            personnes.remove(uId);
+            done = true;
+        }else{
+            for(Person person : personnes.values()){
+                if(person.getKey() != null && !person.getKey().isEmpty()
+                        && person.getKey().equals(uId)){
+                    personnes.remove(person.getPersonId());
+                    done = true;
+                    break;
+                }
+            }
+        }
+        if(done){
+            return ResponseEntity.ok(uId+" deleted");
+        }
+        return ResponseEntity.notFound().build();
+    }
+    @PutMapping(path="/{uId}", produces = "application/json")
+    public ResponseEntity<String> getPersonUpdate(@PathVariable String uId, 
+            @RequestBody Person person){
+        log.info("update uId {}", uId);
+        boolean done = false;
+        if(personnes.containsKey(uId)){
+            personnes.put(uId, attributeUpdate(person, personnes.get(uId)));
+            done = true;
+        }else{
+            for(Person tgt : personnes.values()){
+                if(person.getKey() != null && !person.getKey().isEmpty()
+                        && person.getKey().equals(uId)){
+                    personnes.put(tgt.getPersonId(), attributeUpdate(person, tgt));
+                    done = true;
+                    break;
+                }
+            }
+        }
+        if(done){
+            return ResponseEntity.ok(uId+" updated");
+        }
+        return ResponseEntity.notFound().build();
+    }
+    private Person attributeUpdate(Person src, Person tgt){
+        if(src.getKey()!= null || !src.getKey().isEmpty()){
+            tgt.setKey(src.getKey());
+        }
+        if(src.getOperationalUnit()!= null || !src.getOperationalUnit().isEmpty()){
+            tgt.setOperationalUnit(src.getOperationalUnit());
+        }
+        return tgt;
+    }
+    @GetMapping(path="/{uId}", produces = "application/json")
+    public ResponseEntity<Person> getPerson(@PathVariable String uId){
+        log.info("Demande personid {}", uId);
+        Person ret = null;
+        if(personnes.containsKey(uId)){
+            ret = personnes.get(uId);
+        }else{
+            for(Person person : personnes.values()){
+                if(person.getKey() != null && !person.getKey().isEmpty()
+                        && person.getKey().equals(uId)){
+                    ret = personnes.get(person.getPersonId());
+                    break;
+                }
+            }
+        }
+        if(ret == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(ret);
     }
     @GetMapping(path="", produces = "application/json")
     public ResponseEntity<String> getPersonTest(){

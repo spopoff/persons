@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class Person {
     private String personId;
+    private String key;
     private String firstname;
     private String lastname;
     private String operationalUnit;
@@ -19,6 +20,14 @@ public class Person {
     private final String status = "ACTIVE";
     private List<String> projects;
     public Person(){}
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public String getStatus() {
         return status;
