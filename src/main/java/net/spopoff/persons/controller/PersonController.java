@@ -85,10 +85,10 @@ public class PersonController {
         return ResponseEntity.notFound().build();
     }
     private Person attributeUpdate(Person src, Person tgt){
-        if(src.getKey()!= null || !src.getKey().isEmpty()){
+        if(src.getKey()!= null && !src.getKey().isEmpty()){
             tgt.setKey(src.getKey());
         }
-        if(src.getOperationalUnit()!= null || !src.getOperationalUnit().isEmpty()){
+        if(src.getOperationalUnit()!= null && !src.getOperationalUnit().isEmpty()){
             tgt.setOperationalUnit(src.getOperationalUnit());
         }
         return tgt;
