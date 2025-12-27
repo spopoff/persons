@@ -138,7 +138,10 @@ public class PersonController {
         List<Change> ret = new ArrayList<>();
         Random random = new Random();
         List<Person> persons = donneTout();
+        List<String> deleted = new ArrayList<>();
         boolean boolValue;
+        Person novo = new Person();
+        novo.createOne("novo"+random.nextInt(250, 3000));
         for(Person person : persons){
             boolValue = random.nextBoolean();
             Change done = new Change(person);
@@ -147,6 +150,8 @@ public class PersonController {
             up++;
             changements.add(up);
             if(boolValue){
+                //on supprime
+                deleted.add(person.getPersonId());
                 done.setLastChangeDate(up);
             }else{
                 //on modifie
@@ -155,6 +160,13 @@ public class PersonController {
             }
             ret.add(done);
         }
+        Change done = new Change(novo);
+        done.setDeleted(false);
+        ret.add(done);
+        for(String one : deleted){
+            personnes.remove(one);
+        }
+        personnes.put(novo.getPersonId(), novo);
         return ret.toArray(new Change[0]);
     }
     private List<Person> donneTout(){
