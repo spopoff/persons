@@ -4,6 +4,7 @@
  */
 package net.spopoff.persons;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.TreeSet;
 import net.spopoff.persons.entity.Person;
@@ -26,7 +27,7 @@ public class StartupApplication implements ApplicationListener<ContextRefreshedE
     
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        changements.add(10L);
+        changements.add(new Date().getTime());
         Person un  = new Person();
         personnes.put("toto", un.createOne("toto"));
         un  = new Person();

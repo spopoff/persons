@@ -5,6 +5,7 @@
 package net.spopoff.persons.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -127,14 +128,17 @@ public class PersonController {
     @GetMapping(path="/changelog", produces = "application/json")
     public ResponseEntity<Change[]> getChangement(){
         log.info("Demande changeLog rien");
-        return ResponseEntity.ok(createChangement(true));
+        if(changements.size() == 1){
+            return ResponseEntity.ok(createChangement(true, true));
+        }
+        return ResponseEntity.ok(createChangement(true, false));
     }
     @GetMapping(path="/changelog?from={time}", produces = "application/json")
     public ResponseEntity<Change[]> getChangementFrom(@PathVariable String time){
         log.info("Demande changeLog "+time);
-        return ResponseEntity.ok(createChangement(false));
+        return ResponseEntity.ok(createChangement(false, false));
     }
-    private Change[] createChangement(boolean isTime){
+    private Change[] createChangement(boolean isTime, boolean once){
         List<Change> ret = new ArrayList<>();
         Random random = new Random();
         List<Person> persons = donneTout();
@@ -142,12 +146,21 @@ public class PersonController {
         boolean boolValue;
         Person novo = new Person();
         novo.createOne("novo"+random.nextInt(250, 3000));
+        Long up, upP;
         for(Person person : persons){
+            try{
+                Thread.sleep(100);
+            }catch(InterruptedException ex){}
             boolValue = random.nextBoolean();
+            if(once) boolValue = false;
             Change done = new Change(person);
             done.setDeleted(boolValue);
-            Long up = changements.last();
-            up++;
+            up = new Date().getTime();
+            upP = changements.last();
+            log.info("1 up="+up+" upP="+upP);
+            if(upP >= up) up = upP++;
+            up = up++;
+            log.info("2 up="+up+" upP="+upP);
             changements.add(up);
             if(boolValue){
                 //on supprime
@@ -155,18 +168,29 @@ public class PersonController {
                 done.setLastChangeDate(up);
             }else{
                 //on modifie
-                person.setOperationalUnit("travail"+boolValue);
+                if(!once) person.setOperationalUnit("travail"+up);
                 done.setLastChangeDate(up);
             }
             ret.add(done);
         }
-        Change done = new Change(novo);
-        done.setDeleted(false);
-        ret.add(done);
-        for(String one : deleted){
-            personnes.remove(one);
+        if(!once){
+            try{
+                Thread.sleep(100);
+            }catch(InterruptedException ex){}
+            up = new Date().getTime();
+            upP = changements.last();
+            if(upP > up) up = upP++;
+            up = up++;
+            Change done = new Change(novo);
+            done.setDeleted(false);
+            done.setLastChangeDate(up);
+            changements.add(up);
+            ret.add(done);
+            for(String one : deleted){
+                personnes.remove(one);
+            }
+            personnes.put(novo.getPersonId(), novo);
         }
-        personnes.put(novo.getPersonId(), novo);
         return ret.toArray(new Change[0]);
     }
     private List<Person> donneTout(){
