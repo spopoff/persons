@@ -19,9 +19,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -62,6 +64,21 @@ public class PersonController {
         }
         return ResponseEntity.notFound().build();
     }
+    @PostMapping(value="add",produces = "application/json")
+    public ResponseEntity<String> addPerson(@RequestBody Person person){
+        log.info("add personId {}", person.getPersonId());
+        boolean found = false;
+        if(personnes.containsKey(person.getPersonId())){
+            found = true;
+        }else{
+            personnes.put(person.getPersonId(), person);
+        }
+        if(!found){
+            return ResponseEntity.ok(person.getPersonId()+" added");
+        }
+        return ResponseEntity.unprocessableEntity().build();
+    }
+    
     @PutMapping(path="/{uId}", produces = "application/json")
     public ResponseEntity<String> getPersonUpdate(@PathVariable String uId, 
             @RequestBody Person person){
