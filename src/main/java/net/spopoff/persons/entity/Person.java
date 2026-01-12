@@ -13,8 +13,8 @@ import java.util.List;
 public class Person {
     private String personId;
     private String key;
-    private String firstname;
-    private String lastname;
+    private String prenom;
+    private String nom;
     private String operationalUnit;
     private Person managerId;
     private final String status = "ACTIVE";
@@ -43,20 +43,20 @@ public class Person {
         this.personId = personId;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getPrenom() {
+        return prenom;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getNom() {
+        return nom;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
     public String getOperationalUnit() {
@@ -84,11 +84,11 @@ public class Person {
     }
     public Person createOne(String personId){
         setPersonId(personId);
-        setFirstname("prénom de "+personId);
-        setLastname("nom de "+personId);
+        setPrenom("prénom de "+personId);
+        setNom("nom de "+personId);
         Person mng = new Person();
-        mng.setFirstname("prénom du chef de "+personId);
-        mng.setLastname("nom du chef de "+personId);
+        mng.setPrenom("prénom du chef de "+personId);
+        mng.setNom("nom du chef de "+personId);
         mng.setPersonId("chef2"+personId);
         mng.setOperationalUnit("boulot");
         setManagerId(mng);
