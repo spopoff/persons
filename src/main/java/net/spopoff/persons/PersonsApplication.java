@@ -3,6 +3,7 @@ package net.spopoff.persons;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
+import net.spopoff.persons.entity.Admin;
 import net.spopoff.persons.entity.Person;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,6 +28,12 @@ public class PersonsApplication {
     @Bean
     public TreeSet<Long> changements(){
         return new TreeSet<>();
+    
+    }
+    @Bean
+    public Map<String, Admin> admins(){
+        Map<String, Admin> persons = new HashMap<>();
+        return persons;
     
     }
 }

@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeSet;
+import net.spopoff.persons.entity.Admin;
 import net.spopoff.persons.entity.Change;
-import net.spopoff.persons.entity.Person;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,29 +30,29 @@ import org.springframework.web.bind.annotation.RestController;
  * @author steph
  */
 @RestController
-@RequestMapping("persons")
-public class PersonController {
+@RequestMapping("admins")
+public class AdminController {
     
     @Autowired
-    Map<String, Person> personnes;
+    Map<String, Admin> admins;
 
     @Autowired
     TreeSet<Long> changements;
     
-    private final Logger log = LogManager.getLogger(PersonController.class);
+    private final Logger log = LogManager.getLogger(AdminController.class);
     
     @DeleteMapping(path="/{uId}", produces = "application/json")
-    public ResponseEntity<String> getPersonDelete(@PathVariable String uId){
+    public ResponseEntity<String> getAdminDelete(@PathVariable String uId){
         log.info("delete uId {}", uId);
         boolean done = false;
-        if(personnes.containsKey(uId)){
-            personnes.remove(uId);
+        if(admins.containsKey(uId)){
+            admins.remove(uId);
             done = true;
         }else{
-            for(Person person : personnes.values()){
-                if(person.getKey() != null && !person.getKey().isEmpty()
-                        && person.getKey().equals(uId)){
-                    personnes.remove(person.getPersonId());
+            for(Admin admin : admins.values()){
+                if(admin.getKey() != null && !admin.getKey().isEmpty()
+                        && admin.getKey().equals(uId)){
+                    admins.remove(admin.getPersonId());
                     done = true;
                     break;
                 }
@@ -64,33 +64,33 @@ public class PersonController {
         return ResponseEntity.notFound().build();
     }
     @PostMapping(value="add",produces = "application/json")
-    public ResponseEntity<String> addPerson(@RequestBody Person person){
-        log.info("add personId {}", person.getPersonId());
+    public ResponseEntity<String> addAdmin(@RequestBody Admin admin){
+        log.info("add personId {}", admin.getPersonId());
         boolean found = false;
-        if(personnes.containsKey(person.getPersonId())){
+        if(admins.containsKey(admin.getPersonId())){
             found = true;
         }else{
-            personnes.put(person.getPersonId(), person);
+            admins.put(admin.getPersonId(), admin);
         }
         if(!found){
-            return ResponseEntity.ok(person.getPersonId()+" added");
+            return ResponseEntity.ok(admin.getPersonId()+" added");
         }
         return ResponseEntity.unprocessableEntity().build();
     }
     
     @PutMapping(path="/{uId}", produces = "application/json")
-    public ResponseEntity<String> getPersonUpdate(@PathVariable String uId, 
-            @RequestBody Person person){
+    public ResponseEntity<String> getAdminUpdate(@PathVariable String uId, 
+            @RequestBody Admin admin){
         log.info("update uId {}", uId);
         boolean done = false;
-        if(personnes.containsKey(uId)){
-            personnes.put(uId, attributeUpdate(person, personnes.get(uId)));
+        if(admins.containsKey(uId)){
+            admins.put(uId, attributeUpdate(admin, admins.get(uId)));
             done = true;
         }else{
-            for(Person tgt : personnes.values()){
-                if(person.getKey() != null && !person.getKey().isEmpty()
-                        && person.getKey().equals(uId)){
-                    personnes.put(tgt.getPersonId(), attributeUpdate(person, tgt));
+            for(Admin tgt : admins.values()){
+                if(admin.getKey() != null && !admin.getKey().isEmpty()
+                        && admin.getKey().equals(uId)){
+                    admins.put(tgt.getPersonId(), attributeUpdate(admin, tgt));
                     done = true;
                     break;
                 }
@@ -101,26 +101,23 @@ public class PersonController {
         }
         return ResponseEntity.notFound().build();
     }
-    private Person attributeUpdate(Person src, Person tgt){
+    private Admin attributeUpdate(Admin src, Admin tgt){
         if(src.getKey()!= null && !src.getKey().isEmpty()){
             tgt.setKey(src.getKey());
-        }
-        if(src.getOperationalUnit()!= null && !src.getOperationalUnit().isEmpty()){
-            tgt.setOperationalUnit(src.getOperationalUnit());
         }
         return tgt;
     }
     @GetMapping(path="/{uId}", produces = "application/json")
-    public ResponseEntity<Person> getPerson(@PathVariable String uId){
+    public ResponseEntity<Admin> getAdmin(@PathVariable String uId){
         log.info("Demande personid {}", uId);
-        Person ret = null;
-        if(personnes.containsKey(uId)){
-            ret = personnes.get(uId);
+        Admin ret = null;
+        if(admins.containsKey(uId)){
+            ret = admins.get(uId);
         }else{
-            for(Person person : personnes.values()){
-                if(person.getKey() != null && !person.getKey().isEmpty()
-                        && person.getKey().equals(uId)){
-                    ret = personnes.get(person.getPersonId());
+            for(Admin admin : admins.values()){
+                if(admin.getKey() != null && !admin.getKey().isEmpty()
+                        && admin.getKey().equals(uId)){
+                    ret = admins.get(admin.getPersonId());
                     break;
                 }
             }
@@ -131,15 +128,15 @@ public class PersonController {
         return ResponseEntity.ok(ret);
     }
     @GetMapping(path="", produces = "application/json")
-    public ResponseEntity<String> getPersonTest(){
+    public ResponseEntity<String> getAdminTest(){
         log.info("Demande test");
         return ResponseEntity.ok("OK");
     }
     @GetMapping(path="/", produces = "application/json")
-    public ResponseEntity<List<Person>> getPersons(){
+    public ResponseEntity<List<Admin>> getAdmin(){
         log.info("Demande tout");
-        List<Person> persons = donneTout();
-        return ResponseEntity.ok(persons);
+        List<Admin> admins = donneTout();
+        return ResponseEntity.ok(admins);
     }
     @GetMapping(path="/changelog", produces = "application/json")
     public ResponseEntity<Change[]> getChangement(){
@@ -157,19 +154,19 @@ public class PersonController {
     private Change[] createChangement(boolean isTime, boolean once){
         List<Change> ret = new ArrayList<>();
         Random random = new Random();
-        List<Person> persons = donneTout();
+        List<Admin> aadmins = donneTout();
         List<String> deleted = new ArrayList<>();
         boolean boolValue;
-        Person novo = new Person();
+        Admin novo = new Admin();
         novo.createOne("novo"+random.nextInt(250, 3000));
         Long up, upP;
-        for(Person person : persons){
+        for(Admin admin : aadmins){
             try{
                 Thread.sleep(100);
             }catch(InterruptedException ex){}
             boolValue = random.nextBoolean();
             if(once) boolValue = false;
-            Change done = new Change(person);
+            Change done = new Change(admin);
             done.setDeleted(boolValue);
             up = new Date().getTime();
             upP = changements.last();
@@ -180,11 +177,11 @@ public class PersonController {
             changements.add(up);
             if(boolValue){
                 //on supprime
-                deleted.add(person.getPersonId());
+                deleted.add(admin.getPersonId());
                 done.setLastChangeDate(up);
             }else{
                 //on modifie
-                if(!once) person.setOperationalUnit("travail"+up);
+                if(!once) admin.getProjects().add("travail"+up);
                 done.setLastChangeDate(up);
             }
             ret.add(done);
@@ -203,13 +200,14 @@ public class PersonController {
             changements.add(up);
             ret.add(done);
             for(String one : deleted){
-                personnes.remove(one);
+                admins.remove(one);
             }
-            personnes.put(novo.getPersonId(), novo);
+            novo.getProjects().add("travail"+up);
+            admins.put(novo.getPersonId(), novo);
         }
         return ret.toArray(new Change[0]);
     }
-    private List<Person> donneTout(){
-        return new ArrayList(personnes.values());
+    private List<Admin> donneTout(){
+        return new ArrayList(admins.values());
     }
 }

@@ -13,9 +13,18 @@ public class Change {
     private Boolean deleted;
     private Long lastChangeDate;
     private Person person;
+    private Admin admin;
     public Change(){}
     public Change(Person person){
         this.person = person;
+    }
+
+    public Change(Admin admin) {
+        this.admin = admin;
+    }
+
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
     }
 
     public void setPerson(Person person) {
@@ -36,6 +45,10 @@ public class Change {
 
     public void setLastChangeDate(Long lastChangeDate) {
         this.lastChangeDate = lastChangeDate;
+    }
+
+    public Admin getAdmin() {
+        return admin;
     }
 
 
