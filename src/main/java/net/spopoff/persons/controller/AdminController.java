@@ -52,7 +52,7 @@ public class AdminController {
             for(Admin admin : admins.values()){
                 if(admin.getKey() != null && !admin.getKey().isEmpty()
                         && admin.getKey().equals(uId)){
-                    admins.remove(admin.getPersonId());
+                    admins.remove(admin.getPersonName());
                     done = true;
                     break;
                 }
@@ -65,15 +65,15 @@ public class AdminController {
     }
     @PostMapping(value="add",produces = "application/json")
     public ResponseEntity<String> addAdmin(@RequestBody Admin admin){
-        log.info("add personId {}", admin.getPersonId());
+        log.info("add admin personName {}", admin.getPersonName());
         boolean found = false;
-        if(admins.containsKey(admin.getPersonId())){
+        if(admins.containsKey(admin.getPersonName())){
             found = true;
         }else{
-            admins.put(admin.getPersonId(), admin);
+            admins.put(admin.getPersonName(), admin);
         }
         if(!found){
-            return ResponseEntity.ok(admin.getPersonId()+" added");
+            return ResponseEntity.ok(admin.getPersonName()+" added");
         }
         return ResponseEntity.unprocessableEntity().build();
     }
@@ -90,7 +90,7 @@ public class AdminController {
             for(Admin tgt : admins.values()){
                 if(admin.getKey() != null && !admin.getKey().isEmpty()
                         && admin.getKey().equals(uId)){
-                    admins.put(tgt.getPersonId(), attributeUpdate(admin, tgt));
+                    admins.put(tgt.getPersonName(), attributeUpdate(admin, tgt));
                     done = true;
                     break;
                 }
@@ -109,7 +109,7 @@ public class AdminController {
     }
     @GetMapping(path="/{uId}", produces = "application/json")
     public ResponseEntity<Admin> getAdmin(@PathVariable String uId){
-        log.info("Demande personid {}", uId);
+        log.info("Demande admin personName {}", uId);
         Admin ret = null;
         if(admins.containsKey(uId)){
             ret = admins.get(uId);
@@ -117,7 +117,7 @@ public class AdminController {
             for(Admin admin : admins.values()){
                 if(admin.getKey() != null && !admin.getKey().isEmpty()
                         && admin.getKey().equals(uId)){
-                    ret = admins.get(admin.getPersonId());
+                    ret = admins.get(admin.getPersonName());
                     break;
                 }
             }
@@ -134,13 +134,13 @@ public class AdminController {
     }
     @GetMapping(path="/", produces = "application/json")
     public ResponseEntity<List<Admin>> getAdmin(){
-        log.info("Demande tout");
+        log.info("Demande admin tout");
         List<Admin> admins = donneTout();
         return ResponseEntity.ok(admins);
     }
     @GetMapping(path="/changelog", produces = "application/json")
     public ResponseEntity<Change[]> getChangement(){
-        log.info("Demande changeLog rien");
+        log.info("Demande admin changeLog rien");
         if(changements.size() == 1){
             return ResponseEntity.ok(createChangement(true, true));
         }
@@ -148,7 +148,7 @@ public class AdminController {
     }
     @GetMapping(path="/changelog?from={time}", produces = "application/json")
     public ResponseEntity<Change[]> getChangementFrom(@PathVariable String time){
-        log.info("Demande changeLog "+time);
+        log.info("Demande admin changeLog "+time);
         return ResponseEntity.ok(createChangement(false, false));
     }
     private Change[] createChangement(boolean isTime, boolean once){
@@ -177,7 +177,7 @@ public class AdminController {
             changements.add(up);
             if(boolValue){
                 //on supprime
-                deleted.add(admin.getPersonId());
+                deleted.add(admin.getPersonName());
                 done.setLastChangeDate(up);
             }else{
                 //on modifie
@@ -203,7 +203,7 @@ public class AdminController {
                 admins.remove(one);
             }
             novo.getProjects().add("travail"+up);
-            admins.put(novo.getPersonId(), novo);
+            admins.put(novo.getPersonName(), novo);
         }
         return ret.toArray(new Change[0]);
     }
