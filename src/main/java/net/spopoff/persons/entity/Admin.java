@@ -12,9 +12,9 @@ import java.util.List;
  * @author steph
  */
 public class Admin {
-    private String personName;
+    private String appName;
     private String key;
-    private String username;
+    private String login;
     private final String status = "ACTIVE";
     private final List<String> projects = new ArrayList<>();
     public Admin(){}
@@ -30,23 +30,23 @@ public class Admin {
     public String getStatus() {
         return status;
     }
-    public String getPersonName() {
-        return personName;
+    public String getAppName() {
+        return appName;
     }
     public String getUid() {
-        return personName;
+        return appName;
     }
 
-    public void setPersonName(String personName) {
-        this.personName = personName;
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
-    public String getUsername() {
-        return username;
+    public String getLogin() {
+        return login;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
 
@@ -57,9 +57,9 @@ public class Admin {
     public void setProjects(List<String> projects) {
         this.projects.addAll(projects);
     }
-    public Admin createOne(String personName){
-        setPersonName(personName);
-        setUsername("adm-"+personName);
+    public Admin createOne(String appName, String login){
+        setAppName(appName);
+        setLogin("adm-"+appName);
         return this;
     }
 }

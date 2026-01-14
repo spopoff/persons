@@ -52,7 +52,7 @@ public class AdminController {
             for(Admin admin : admins.values()){
                 if(admin.getKey() != null && !admin.getKey().isEmpty()
                         && admin.getKey().equals(uId)){
-                    admins.remove(admin.getPersonName());
+                    admins.remove(admin.getLogin());
                     done = true;
                     break;
                 }
@@ -65,15 +65,15 @@ public class AdminController {
     }
     @PostMapping(value="add",produces = "application/json")
     public ResponseEntity<String> addAdmin(@RequestBody Admin admin){
-        log.info("add admin personName {}", admin.getPersonName());
+        log.info("add admin personName {}", admin.getLogin());
         boolean found = false;
-        if(admins.containsKey(admin.getPersonName())){
+        if(admins.containsKey(admin.getLogin())){
             found = true;
         }else{
-            admins.put(admin.getPersonName(), admin);
+            admins.put(admin.getLogin(), admin);
         }
         if(!found){
-            return ResponseEntity.ok(admin.getPersonName()+" added");
+            return ResponseEntity.ok(admin.getLogin()+" added");
         }
         return ResponseEntity.unprocessableEntity().build();
     }
@@ -90,7 +90,7 @@ public class AdminController {
             for(Admin tgt : admins.values()){
                 if(admin.getKey() != null && !admin.getKey().isEmpty()
                         && admin.getKey().equals(uId)){
-                    admins.put(tgt.getPersonName(), attributeUpdate(admin, tgt));
+                    admins.put(tgt.getLogin(), attributeUpdate(admin, tgt));
                     done = true;
                     break;
                 }
@@ -117,7 +117,7 @@ public class AdminController {
             for(Admin admin : admins.values()){
                 if(admin.getKey() != null && !admin.getKey().isEmpty()
                         && admin.getKey().equals(uId)){
-                    ret = admins.get(admin.getPersonName());
+                    ret = admins.get(admin.getLogin());
                     break;
                 }
             }
@@ -158,7 +158,7 @@ public class AdminController {
         List<String> deleted = new ArrayList<>();
         boolean boolValue;
         Admin novo = new Admin();
-        novo.createOne("novo"+random.nextInt(250, 3000));
+        novo.createOne("appAdmin","user"+random.nextInt(250, 3000));
         Long up, upP;
         for(Admin admin : aadmins){
             try{
@@ -177,7 +177,7 @@ public class AdminController {
             changements.add(up);
             if(boolValue){
                 //on supprime
-                deleted.add(admin.getPersonName());
+                deleted.add(admin.getLogin());
                 done.setLastChangeDate(up);
             }else{
                 //on modifie
@@ -203,7 +203,7 @@ public class AdminController {
                 admins.remove(one);
             }
             novo.getProjects().add("travail"+up);
-            admins.put(novo.getPersonName(), novo);
+            admins.put(novo.getLogin(), novo);
         }
         return ret.toArray(new Change[0]);
     }
