@@ -62,4 +62,9 @@ public class Admin {
         setLogin("adm-"+appName);
         return this;
     }
+    @Override
+    public String toString(){
+        return "login="+getLogin()+" appName="+getAppName()+
+                " key="+getKey()+" projects="+String.join("; ", getProjects());
+    }
 }

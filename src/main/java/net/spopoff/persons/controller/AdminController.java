@@ -65,7 +65,7 @@ public class AdminController {
     }
     @PostMapping(value="add",produces = "application/json")
     public ResponseEntity<String> addAdmin(@RequestBody Admin admin){
-        log.info("add admin personName {}", admin.getLogin());
+        log.info("add admin login {}", admin.getLogin());
         boolean found = false;
         if(admins.containsKey(admin.getLogin())){
             found = true;
